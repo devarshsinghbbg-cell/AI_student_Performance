@@ -1,0 +1,15 @@
+{
+ "best_model": "Logistic Regression",
+ "n_train": 1200,
+ "n_test": 300,
+ "at_risk_rate": 0.24,
+ "lr_coef": {
+  "attendance_pct": -0.949,
+  "quiz_avg": -2.035,
+  "assignment_avg": -1.116,
+  "assignment_trend": -1.096,
+  "coding_hours_week": -0.982,
+  "study_hours_week": -0.708,
+  "missed_deadlines": 0.733
+ }
+}

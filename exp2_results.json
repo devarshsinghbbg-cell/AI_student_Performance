@@ -1,0 +1,37 @@
+{
+ "platt_a": 1.3251761036180147,
+ "platt_b": -1.2240338360057743,
+ "t_low": 0.14,
+ "t_high": 0.43,
+ "final_metrics_at_t_high": {
+  "ROC_AUC": 0.9724658869395711,
+  "PR_AUC": 0.9272148098290939,
+  "Precision": 0.7662337662337663,
+  "Recall": 0.8194444444444444,
+  "F1": 0.7919463087248322
+ },
+ "confusion_at_t_high": {
+  "TN": 210,
+  "FP": 18,
+  "FN": 13,
+  "TP": 59
+ },
+ "xai": {
+  "top1_agreement": 0.69,
+  "top3_overlap": 0.7866666666666666,
+  "sign_agreement": 0.8471428571428572,
+  "mean_spearman_per_student": 0.7264285714285715,
+  "global_rank_spearman": 0.7142857142857144
+ },
+ "fairness_gaps": {
+  "eq_opp_gap": 0.09615384615384615,
+  "dem_parity_gap": 0.21991442324835084,
+  "fpr_gap": 0.08165790287658523
+ },
+ "best_params": {
+  "Logistic Regression": "{'C': 0.1}",
+  "Random Forest": "{'max_depth': None, 'min_samples_leaf': 1, 'n_estimators': 200}",
+  "Gradient Boosting": "{'learning_rate': 0.1, 'max_depth': 2, 'n_estimators': 100}"
+ },
+ "C": 0.1
+}

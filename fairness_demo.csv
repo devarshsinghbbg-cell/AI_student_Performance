@@ -1,0 +1,3 @@
+Group,N,Base_rate,Flag_rate,TPR,FPR,Precision
+Hostel resident,142,0.141,0.141,0.75,0.041,0.75
+Day scholar,158,0.329,0.361,0.846,0.123,0.772

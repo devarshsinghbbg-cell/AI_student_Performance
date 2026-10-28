@@ -1,0 +1,7 @@
+numpy
+pandas
+scikit-learn
+matplotlib
+flask
+scipy
+ucimlrepo  # only for validate_uci.py without a local CSV

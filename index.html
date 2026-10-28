@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EduMentor AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f5fa;--card:#ffffff;--ink:#16204a;--muted:#5b6485;--line:#dde2ef;--accent:#2f4bd0;--accent-ink:#fff;
+  --ok:#2b8a3e;--okbg:#e3f4e7;--mid:#b86e00;--midbg:#fdf0d5;--bad:#c92a2a;--badbg:#fbe3e3;
+  --head:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1530;--card:#171f45;--ink:#e8ecfb;--muted:#9aa4cc;--line:#2a3566;--accent:#7d93ff;--accent-ink:#0f1530;
+  --ok:#69db7c;--okbg:#17391f;--mid:#ffc94d;--midbg:#3d2f0a;--bad:#ff8787;--badbg:#431a1a;}}
+:root[data-theme="dark"]{
+  --bg:#0f1530;--card:#171f45;--ink:#e8ecfb;--muted:#9aa4cc;--line:#2a3566;--accent:#7d93ff;--accent-ink:#0f1530;
+  --ok:#69db7c;--okbg:#17391f;--mid:#ffc94d;--midbg:#3d2f0a;--bad:#ff8787;--badbg:#431a1a;}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--body)}
+.wrap{max-width:1120px;margin:0 auto;padding:20px 18px 60px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+h1{font:700 28px/1.1 var(--head);margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:4px 0 18px;max-width:62ch}
+nav{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);padding:4px;border-radius:12px}
+nav button{border:0;background:none;color:var(--muted);font:500 14px var(--body);padding:8px 14px;border-radius:9px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:18px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.card h2{font:700 18px var(--head);margin:0 0 12px}
+.card h3{font:600 14px var(--body);margin:16px 0 8px;color:var(--muted)}
+.row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin-bottom:12px}
+.row label{font-weight:500}.row output{font-variant-numeric:tabular-nums;font-weight:600;color:var(--accent)}
+.row input{grid-column:1/-1;width:100%;accent-color:var(--accent)}
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 12px;border-radius:9px;font:500 13px var(--body);cursor:pointer}
+.btn:hover{border-color:var(--accent)}.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.sticky{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+@media(max-width:860px){.sticky{position:static}}
+.gauge{display:block;margin:0 auto;width:100%;max-width:340px}
+.verdict{text-align:center;margin:-6px 0 14px}
+.verdict .pct{font:700 40px var(--head);line-height:1}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font:600 12px var(--body)}
+.chip.Low{background:var(--okbg);color:var(--ok)}.chip.Medium{background:var(--midbg);color:var(--mid)}.chip.High{background:var(--badbg);color:var(--bad)}
+.factor{display:grid;grid-template-columns:1fr 90px;gap:10px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line)}
+.factor:last-child{border:0}.factor small{color:var(--muted);display:block}
+.bar{height:8px;border-radius:5px;background:var(--line);position:relative;overflow:hidden}
+.bar i{position:absolute;top:0;bottom:0;border-radius:5px}
+.plan li{margin:0 0 10px}.plan{padding-left:18px;margin:0}
+.tag{font:600 11px var(--body);padding:1px 7px;border-radius:6px;margin-right:6px}
+.tag.p1{background:var(--badbg);color:var(--bad)}.tag.p2{background:var(--midbg);color:var(--mid)}.tag.p3{background:var(--okbg);color:var(--ok)}
+.weak{display:flex;gap:6px;flex-wrap:wrap}
+.tchip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:3px 9px;font:500 12.5px var(--body);cursor:pointer;margin:0 6px 6px 0}.tchip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.weak span{background:var(--badbg);color:var(--bad);padding:3px 10px;border-radius:8px;font-weight:500;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat b{font:700 26px var(--head);display:block}.stat span{color:var(--muted);font-size:13px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-weight:600;color:var(--muted);cursor:pointer;user-select:none}
+tbody tr{cursor:pointer}tbody tr:hover,tbody tr[aria-selected="true"]{background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+select,input[type=file]{font:400 14px var(--body);color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:9px;padding:6px 8px}
+.note{font-size:13px;color:var(--muted);margin-top:10px}
+.hidden{display:none}
+footer{margin-top:30px;color:var(--muted);font-size:12.5px;max-width:80ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>EduMentor AI</h1>
+  <nav role="tablist" aria-label="Views">
+    <button role="tab" id="tab-student" aria-selected="true">Student view</button>
+    <button role="tab" id="tab-faculty" aria-selected="false">Faculty dashboard</button>
+  </nav>
+</header>
+<p class="sub">Enter your academic data to see your predicted academic risk, the factors behind it, your weak subjects and a study plan that updates as your numbers change.</p>
+
+<!-- STUDENT -->
+<section id="view-student" class="grid">
+  <div>
+  <div class="card">
+    <h2>Your academic data</h2>
+    <div class="presets">
+      <button class="btn" data-preset="strong">Load: steady student</button>
+      <button class="btn" data-preset="avg">Load: average student</button>
+      <button class="btn" data-preset="border">Load: borderline student</button>
+      <button class="btn" data-preset="weak">Load: struggling student</button>
+    </div>
+    <h3>Subject quiz averages (%)</h3>
+    <div id="subjectInputs"></div>
+    <h3>Coursework and habits</h3>
+    <div id="featureInputs"></div>
+  </div>
+  <div class="card hidden" id="account" style="margin-top:18px">
+    <h2>Save your progress</h2>
+    <div id="authBox">
+      <div class="row" style="grid-template-columns:1fr 1fr;gap:8px"><input id="uName" placeholder="Username" autocomplete="username" style="padding:7px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)"><input id="uPass" type="password" placeholder="Password (8+ characters)" autocomplete="current-password" style="padding:7px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)"></div>
+      <div class="presets"><select id="uRole"><option value="student">Student</option><option value="faculty">Faculty</option></select><input id="uCode" placeholder="Faculty code" class="hidden" style="padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)"><button class="btn primary" id="btnLogin">Sign in</button><button class="btn" id="btnRegister">Create account</button></div>
+    </div>
+    <div id="savedBox" class="hidden">
+      <div class="presets"><span id="whoami" style="align-self:center"></span><button class="btn primary" id="btnSave">Save snapshot</button><button class="btn" id="btnLogout">Sign out</button></div>
+      <svg id="trend" viewBox="0 0 300 90" style="width:100%;max-width:420px"></svg>
+      <ol class="plan" id="historyList"></ol>
+    </div>
+    <p class="note" id="authMsg"></p>
+  </div>
+  </div>
+  <div class="sticky">
+    <div class="card" aria-live="polite">
+      <h2>Predicted academic risk</h2>
+      <svg id="gauge" class="gauge" viewBox="0 0 300 175" role="img" aria-label="Risk gauge"></svg>
+      <div class="verdict"><div class="pct" id="pct">0%</div><span class="chip" id="level">Low</span></div>
+      <h3>Weak subjects</h3><div class="weak" id="weakList"></div><div id="topics"></div>
+      <h3>Why this score</h3><div id="factors"></div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <h2>Your study plan this week</h2>
+      <ol class="plan" id="plan"></ol>
+      <p class="note">Recommendations come from rules applied to the factors the model found most influential for you. They update when you change any value.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FACULTY -->
+<section id="view-faculty" class="hidden">
+  <div class="stats" id="stats"></div>
+  <div class="toolbar">
+    <label for="filter">Show</label>
+    <select id="filter"><option value="all">All students</option><option value="High">High risk</option><option value="Medium">Medium risk</option><option value="Low">Low risk</option></select>
+    <label for="csv" class="btn">Upload CSV</label>
+    <input id="csv" type="file" accept=".csv" class="hidden">
+    <button class="btn" id="resetCohort">Reset sample cohort</button>
+    <button class="btn hidden" id="dbCohort">Load cohort from database</button>
+  </div>
+  <div class="grid" style="grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)">
+    <div class="tablewrap"><table id="cohort"><thead><tr>
+      <th data-k="id">Student</th><th data-k="p">Risk</th><th data-k="level">Level</th><th data-k="weak">Weakest subject</th><th data-k="attendance_pct">Attendance</th><th data-k="quiz_avg">Quiz avg</th></tr></thead><tbody></tbody></table></div>
+    <div class="card sticky" id="detail"><h2>Select a student</h2><p class="note">Choose a row to see the reasons behind the score and a suggested intervention.</p></div>
+  </div>
+  <p class="note">CSV needs these columns: attendance_pct, quiz_avg, assignment_avg, assignment_trend, coding_hours_week, study_hours_week, missed_deadlines. Optional: id and quiz_Maths, quiz_Programming, quiz_DBMS, quiz_Networks, quiz_AI_Basics. Files are processed in your browser and are not uploaded anywhere.</p>
+</section>
+
+<footer>Prototype for coursework. The model (calibrated logistic regression) was trained on a synthetic dataset of 1,500 simulated students, so scores demonstrate the system and are not real predictions about real people. Use as decision support, not as a verdict.</footer>
+</div>
+
+<script>
+const MODEL = {"features": ["attendance_pct", "quiz_avg", "assignment_avg", "assignment_trend", "coding_hours_week", "study_hours_week", "missed_deadlines"], "mean": [75.563, 61.63133333333334, 65.89816666666668, 0.0066833333333333345, 4.03425, 8.919666666666666, 2.245], "scale": [11.339084222281798, 14.185554326692897, 13.237645056387064, 1.5003622339473746, 2.5291702073012012, 3.9213959957591067, 1.5513354462097058], "coef": [-1.0025712106512028, -1.9129539294225246, -1.2550414618683283, -1.0921733888800564, -1.1062134735364981, -0.7204021350441357, 0.8084234214131326], "intercept": -4.5295889991436304, "feature_means_safe": {"attendance_pct": 79.19, "quiz_avg": 66.29, "assignment_avg": 70.2, "assignment_trend": 0.39, "coding_hours_week": 4.82, "study_hours_week": 9.92, "missed_deadlines": 1.82}, "t_low": 0.14, "t_high": 0.43, "platt_a": 1.3251761036180147, "platt_b": -1.2240338360057743, "C": 0.1};
+const SAMPLE = [{"attendance_pct": 83.7, "quiz_avg": 54.5, "assignment_avg": 50.4, "assignment_trend": 0.91, "coding_hours_week": 6.4, "study_hours_week": 8.3, "lms_logins_month": 13.0, "missed_deadlines": 0, "quiz_Maths": 53.6, "quiz_Programming": 40.1, "quiz_DBMS": 44.3, "quiz_Networks": 63.5, "quiz_AI_Basics": 71.0}, {"attendance_pct": 71.4, "quiz_avg": 71.0, "assignment_avg": 74.6, "assignment_trend": 0.51, "coding_hours_week": 2.5, "study_hours_week": 10.5, "lms_logins_month": 14.0, "missed_deadlines": 3, "quiz_Maths": 70.8, "quiz_Programming": 67.0, "quiz_DBMS": 74.7, "quiz_Networks": 71.1, "quiz_AI_Basics": 71.7}, {"attendance_pct": 83.6, "quiz_avg": 59.5, "assignment_avg": 75.5, "assignment_trend": -1.12, "coding_hours_week": 5.4, "study_hours_week": 11.9, "lms_logins_month": 21.0, "missed_deadlines": 0, "quiz_Maths": 76.9, "quiz_Programming": 52.8, "quiz_DBMS": 41.5, "quiz_Networks": 73.3, "quiz_AI_Basics": 53.0}, {"attendance_pct": 82.0, "quiz_avg": 78.6, "assignment_avg": 71.5, "assignment_trend": 1.55, "coding_hours_week": 6.5, "study_hours_week": 8.7, "lms_logins_month": 17.0, "missed_deadlines": 0, "quiz_Maths": 92.5, "quiz_Programming": 51.6, "quiz_DBMS": 65.0, "quiz_Networks": 91.3, "quiz_AI_Basics": 92.7}, {"attendance_pct": 70.2, "quiz_avg": 57.9, "assignment_avg": 70.8, "assignment_trend": -1.91, "coding_hours_week": 3.4, "study_hours_week": 4.9, "lms_logins_month": 14.0, "missed_deadlines": 2, "quiz_Maths": 31.6, "quiz_Programming": 67.3, "quiz_DBMS": 71.2, "quiz_Networks": 59.2, "quiz_AI_Basics": 60.3}, {"attendance_pct": 90.2, "quiz_avg": 84.0, "assignment_avg": 100.0, "assignment_trend": 3.15, "coding_hours_week": 10.2, "study_hours_week": 16.8, "lms_logins_month": 23.0, "missed_deadlines": 0, "quiz_Maths": 83.8, "quiz_Programming": 100.0, "quiz_DBMS": 89.8, "quiz_Networks": 73.0, "quiz_AI_Basics": 73.2}, {"attendance_pct": 59.6, "quiz_avg": 49.9, "assignment_avg": 68.8, "assignment_trend": -0.38, "coding_hours_week": 2.0, "study_hours_week": 2.9, "lms_logins_month": 8.0, "missed_deadlines": 2, "quiz_Maths": 51.6, "quiz_Programming": 42.5, "quiz_DBMS": 56.5, "quiz_Networks": 59.3, "quiz_AI_Basics": 39.8}, {"attendance_pct": 73.3, "quiz_avg": 28.7, "assignment_avg": 45.8, "assignment_trend": -0.03, "coding_hours_week": 1.0, "study_hours_week": 8.4, "lms_logins_month": 15.0, "missed_deadlines": 3, "quiz_Maths": 31.0, "quiz_Programming": 30.1, "quiz_DBMS": 8.0, "quiz_Networks": 42.1, "quiz_AI_Basics": 32.0}, {"attendance_pct": 95.2, "quiz_avg": 72.0, "assignment_avg": 78.5, "assignment_trend": 2.75, "coding_hours_week": 9.5, "study_hours_week": 16.1, "lms_logins_month": 18.0, "missed_deadlines": 1, "quiz_Maths": 70.9, "quiz_Programming": 80.7, "quiz_DBMS": 64.7, "quiz_Networks": 69.5, "quiz_AI_Basics": 74.0}, {"attendance_pct": 75.4, "quiz_avg": 69.7, "assignment_avg": 63.6, "assignment_trend": 0.7, "coding_hours_week": 5.5, "study_hours_week": 9.8, "lms_logins_month": 12.0, "missed_deadlines": 2, "quiz_Maths": 72.9, "quiz_Programming": 58.9, "quiz_DBMS": 72.5, "quiz_Networks": 72.0, "quiz_AI_Basics": 72.3}, {"attendance_pct": 75.5, "quiz_avg": 50.3, "assignment_avg": 49.3, "assignment_trend": 1.02, "coding_hours_week": 2.8, "study_hours_week": 2.7, "lms_logins_month": 12.0, "missed_deadlines": 3, "quiz_Maths": 38.4, "quiz_Programming": 59.8, "quiz_DBMS": 56.2, "quiz_Networks": 38.9, "quiz_AI_Basics": 58.4}, {"attendance_pct": 74.4, "quiz_avg": 70.1, "assignment_avg": 79.3, "assignment_trend": 0.5, "coding_hours_week": 6.4, "study_hours_week": 3.2, "lms_logins_month": 10.0, "missed_deadlines": 2, "quiz_Maths": 71.8, "quiz_Programming": 69.6, "quiz_DBMS": 63.7, "quiz_Networks": 87.7, "quiz_AI_Basics": 57.8}, {"attendance_pct": 79.8, "quiz_avg": 79.2, "assignment_avg": 79.9, "assignment_trend": -1.16, "coding_hours_week": 5.0, "study_hours_week": 11.3, "lms_logins_month": 10.0, "missed_deadlines": 2, "quiz_Maths": 88.1, "quiz_Programming": 81.8, "quiz_DBMS": 69.2, "quiz_Networks": 83.2, "quiz_AI_Basics": 73.5}, {"attendance_pct": 83.1, "quiz_avg": 43.7, "assignment_avg": 52.1, "assignment_trend": 0.64, "coding_hours_week": 6.8, "study_hours_week": 13.4, "lms_logins_month": 13.0, "missed_deadlines": 2, "quiz_Maths": 48.6, "quiz_Programming": 38.3, "quiz_DBMS": 45.8, "quiz_Networks": 44.3, "quiz_AI_Basics": 41.5}, {"attendance_pct": 75.8, "quiz_avg": 47.1, "assignment_avg": 48.0, "assignment_trend": 1.42, "coding_hours_week": 3.1, "study_hours_week": 6.9, "lms_logins_month": 14.0, "missed_deadlines": 1, "quiz_Maths": 34.4, "quiz_Programming": 50.3, "quiz_DBMS": 44.6, "quiz_Networks": 59.2, "quiz_AI_Basics": 47.0}, {"attendance_pct": 82.6, "quiz_avg": 80.9, "assignment_avg": 79.7, "assignment_trend": -0.17, "coding_hours_week": 5.1, "study_hours_week": 10.7, "lms_logins_month": 12.0, "missed_deadlines": 0, "quiz_Maths": 79.5, "quiz_Programming": 95.1, "quiz_DBMS": 79.1, "quiz_Networks": 84.3, "quiz_AI_Basics": 66.7}, {"attendance_pct": 89.1, "quiz_avg": 72.8, "assignment_avg": 76.2, "assignment_trend": -0.24, "coding_hours_week": 7.3, "study_hours_week": 13.5, "lms_logins_month": 11.0, "missed_deadlines": 2, "quiz_Maths": 68.1, "quiz_Programming": 72.4, "quiz_DBMS": 62.9, "quiz_Networks": 70.3, "quiz_AI_Basics": 90.5}, {"attendance_pct": 76.2, "quiz_avg": 65.0, "assignment_avg": 54.3, "assignment_trend": 0.16, "coding_hours_week": 4.3, "study_hours_week": 8.9, "lms_logins_month": 8.0, "missed_deadlines": 2, "quiz_Maths": 52.7, "quiz_Programming": 66.1, "quiz_DBMS": 69.3, "quiz_Networks": 70.6, "quiz_AI_Basics": 66.5}, {"attendance_pct": 71.9, "quiz_avg": 36.2, "assignment_avg": 55.7, "assignment_trend": -0.06, "coding_hours_week": 0.1, "study_hours_week": 11.9, "lms_logins_month": 15.0, "missed_deadlines": 0, "quiz_Maths": 39.0, "quiz_Programming": 24.6, "quiz_DBMS": 41.0, "quiz_Networks": 32.6, "quiz_AI_Basics": 43.6}, {"attendance_pct": 64.9, "quiz_avg": 45.5, "assignment_avg": 59.7, "assignment_trend": 0.74, "coding_hours_week": 2.0, "study_hours_week": 7.0, "lms_logins_month": 10.0, "missed_deadlines": 3, "quiz_Maths": 45.0, "quiz_Programming": 30.2, "quiz_DBMS": 55.0, "quiz_Networks": 50.8, "quiz_AI_Basics": 46.5}, {"attendance_pct": 72.8, "quiz_avg": 67.7, "assignment_avg": 64.3, "assignment_trend": -0.11, "coding_hours_week": 1.9, "study_hours_week": 6.5, "lms_logins_month": 12.0, "missed_deadlines": 2, "quiz_Maths": 69.7, "quiz_Programming": 68.2, "quiz_DBMS": 71.1, "quiz_Networks": 64.8, "quiz_AI_Basics": 64.8}, {"attendance_pct": 79.3, "quiz_avg": 60.7, "assignment_avg": 62.7, "assignment_trend": 1.02, "coding_hours_week": 4.7, "study_hours_week": 6.0, "lms_logins_month": 17.0, "missed_deadlines": 3, "quiz_Maths": 72.4, "quiz_Programming": 57.0, "quiz_DBMS": 67.1, "quiz_Networks": 35.9, "quiz_AI_Basics": 71.1}, {"attendance_pct": 97.2, "quiz_avg": 87.6, "assignment_avg": 92.5, "assignment_trend": 0.4, "coding_hours_week": 6.7, "study_hours_week": 11.2, "lms_logins_month": 20.0, "missed_deadlines": 1, "quiz_Maths": 97.0, "quiz_Programming": 87.5, "quiz_DBMS": 70.8, "quiz_Networks": 84.4, "quiz_AI_Basics": 98.0}, {"attendance_pct": 77.5, "quiz_avg": 53.7, "assignment_avg": 54.8, "assignment_trend": 0.5, "coding_hours_week": 5.4, "study_hours_week": 10.3, "lms_logins_month": 18.0, "missed_deadlines": 2, "quiz_Maths": 55.2, "quiz_Programming": 53.5, "quiz_DBMS": 54.7, "quiz_Networks": 62.1, "quiz_AI_Basics": 42.8}, {"attendance_pct": 86.1, "quiz_avg": 73.0, "assignment_avg": 70.0, "assignment_trend": -0.29, "coding_hours_week": 4.5, "study_hours_week": 8.6, "lms_logins_month": 15.0, "missed_deadlines": 1, "quiz_Maths": 77.0, "quiz_Programming": 58.1, "quiz_DBMS": 66.6, "quiz_Networks": 88.0, "quiz_AI_Basics": 75.2}, {"attendance_pct": 76.2, "quiz_avg": 72.5, "assignment_avg": 78.8, "assignment_trend": -0.88, "coding_hours_week": 3.2, "study_hours_week": 12.6, "lms_logins_month": 19.0, "missed_deadlines": 2, "quiz_Maths": 83.2, "quiz_Programming": 64.0, "quiz_DBMS": 64.6, "quiz_Networks": 75.0, "quiz_AI_Basics": 75.5}, {"attendance_pct": 64.9, "quiz_avg": 75.5, "assignment_avg": 69.8, "assignment_trend": -2.03, "coding_hours_week": 5.0, "study_hours_week": 5.3, "lms_logins_month": 9.0, "missed_deadlines": 1, "quiz_Maths": 76.8, "quiz_Programming": 85.0, "quiz_DBMS": 64.9, "quiz_Networks": 77.9, "quiz_AI_Basics": 72.7}, {"attendance_pct": 72.1, "quiz_avg": 66.2, "assignment_avg": 67.3, "assignment_trend": 0.27, "coding_hours_week": 6.8, "study_hours_week": 7.9, "lms_logins_month": 15.0, "missed_deadlines": 1, "quiz_Maths": 62.2, "quiz_Programming": 65.8, "quiz_DBMS": 67.8, "quiz_Networks": 68.8, "quiz_AI_Basics": 66.3}, {"attendance_pct": 87.9, "quiz_avg": 61.9, "assignment_avg": 59.7, "assignment_trend": -0.66, "coding_hours_week": 4.4, "study_hours_week": 16.1, "lms_logins_month": 16.0, "missed_deadlines": 0, "quiz_Maths": 50.7, "quiz_Programming": 62.2, "quiz_DBMS": 67.7, "quiz_Networks": 72.1, "quiz_AI_Basics": 56.7}, {"attendance_pct": 68.5, "quiz_avg": 68.3, "assignment_avg": 62.3, "assignment_trend": -0.83, "coding_hours_week": 3.4, "study_hours_week": 4.8, "lms_logins_month": 8.0, "missed_deadlines": 4, "quiz_Maths": 72.0, "quiz_Programming": 63.3, "quiz_DBMS": 63.1, "quiz_Networks": 76.7, "quiz_AI_Basics": 66.6}, {"attendance_pct": 81.0, "quiz_avg": 82.3, "assignment_avg": 82.8, "assignment_trend": 1.94, "coding_hours_week": 7.2, "study_hours_week": 15.4, "lms_logins_month": 22.0, "missed_deadlines": 2, "quiz_Maths": 85.2, "quiz_Programming": 81.7, "quiz_DBMS": 93.2, "quiz_Networks": 73.5, "quiz_AI_Basics": 78.0}, {"attendance_pct": 96.7, "quiz_avg": 55.3, "assignment_avg": 77.3, "assignment_trend": -0.82, "coding_hours_week": 4.1, "study_hours_week": 11.0, "lms_logins_month": 15.0, "missed_deadlines": 1, "quiz_Maths": 62.7, "quiz_Programming": 39.0, "quiz_DBMS": 43.1, "quiz_Networks": 71.0, "quiz_AI_Basics": 60.9}, {"attendance_pct": 68.9, "quiz_avg": 45.7, "assignment_avg": 60.7, "assignment_trend": -2.38, "coding_hours_week": 4.7, "study_hours_week": 12.4, "lms_logins_month": 12.0, "missed_deadlines": 1, "quiz_Maths": 37.5, "quiz_Programming": 59.4, "quiz_DBMS": 46.6, "quiz_Networks": 39.9, "quiz_AI_Basics": 45.2}, {"attendance_pct": 81.7, "quiz_avg": 50.9, "assignment_avg": 66.4, "assignment_trend": 1.51, "coding_hours_week": 3.5, "study_hours_week": 12.6, "lms_logins_month": 12.0, "missed_deadlines": 3, "quiz_Maths": 46.5, "quiz_Programming": 52.1, "quiz_DBMS": 39.2, "quiz_Networks": 76.4, "quiz_AI_Basics": 40.3}, {"attendance_pct": 80.0, "quiz_avg": 72.8, "assignment_avg": 68.3, "assignment_trend": -1.99, "coding_hours_week": 6.1, "study_hours_week": 10.1, "lms_logins_month": 14.0, "missed_deadlines": 1, "quiz_Maths": 69.8, "quiz_Programming": 88.1, "quiz_DBMS": 59.8, "quiz_Networks": 74.1, "quiz_AI_Basics": 72.3}, {"attendance_pct": 62.5, "quiz_avg": 37.5, "assignment_avg": 47.8, "assignment_trend": -2.63, "coding_hours_week": 0.3, "study_hours_week": 5.2, "lms_logins_month": 8.0, "missed_deadlines": 4, "quiz_Maths": 52.0, "quiz_Programming": 20.8, "quiz_DBMS": 33.6, "quiz_Networks": 34.8, "quiz_AI_Basics": 46.0}];
+const SUBJECTS = ["Maths","Programming","DBMS","Networks","AI_Basics"];
+const SUBJ_LABEL = {Maths:"Maths",Programming:"Programming",DBMS:"DBMS",Networks:"Networks",AI_Basics:"AI basics"};
+const INPUTS = {
+  assignment_avg:{l:"Assignment average",min:0,max:100,step:1,u:"%"},
+  attendance_pct:{l:"Attendance",min:0,max:100,step:1,u:"%"},
+  assignment_trend:{l:"Assignment trend (negative means falling)",min:-4,max:4,step:.1,u:""},
+  coding_hours_week:{l:"Coding practice per week",min:0,max:20,step:.5,u:" h"},
+  study_hours_week:{l:"Self-study per week",min:0,max:30,step:.5,u:" h"},
+  missed_deadlines:{l:"Missed deadlines this term",min:0,max:10,step:1,u:""}
+};
+const NAME = {attendance_pct:"Attendance",quiz_avg:"Quiz performance",assignment_avg:"Assignment scores",assignment_trend:"Assignment trend",
+  coding_hours_week:"Coding practice",study_hours_week:"Self-study time",missed_deadlines:"Missed deadlines"};
+const UNIT = {attendance_pct:"%",quiz_avg:"%",assignment_avg:"%",assignment_trend:"",coding_hours_week:" h/week",study_hours_week:" h/week",missed_deadlines:""};
+const PRESETS = {
+  strong:{Maths:78,Programming:82,DBMS:75,Networks:72,AI_Basics:80,assignment_avg:82,attendance_pct:90,assignment_trend:.8,coding_hours_week:7,study_hours_week:12,missed_deadlines:0},
+  avg:{Maths:62,Programming:60,DBMS:64,Networks:58,AI_Basics:63,assignment_avg:66,attendance_pct:76,assignment_trend:0,coding_hours_week:4,study_hours_week:9,missed_deadlines:2},
+  border:{Maths:52,Programming:57,DBMS:54,Networks:50,AI_Basics:55,assignment_avg:59,attendance_pct:69,assignment_trend:-0.4,coding_hours_week:3,study_hours_week:8,missed_deadlines:2},
+  weak:{Maths:38,Programming:52,DBMS:44,Networks:41,AI_Basics:47,assignment_avg:50,attendance_pct:61,assignment_trend:-1.5,coding_hours_week:1,study_hours_week:5,missed_deadlines:5}
+};
+const TOPICS = {
+  Maths:[["Linear algebra","Solve 8 problems on matrices, determinants and eigenvalues."],["Probability and statistics","Work through 8 problems on conditional probability and distributions."],["Calculus","Practise 8 differentiation and integration problems."]],
+  Programming:[["Arrays and strings","Solve 4 easy and 2 medium array or string problems."],["Recursion","Trace 5 recursive functions by hand, then code them."],["Linked lists and trees","Implement insert, delete and traversal for each structure."]],
+  DBMS:[["SQL queries and joins","Write 10 queries using joins, GROUP BY and subqueries."],["Normalisation","Normalise 4 tables up to BCNF, listing functional dependencies."],["Transactions and concurrency","Explain ACID and work 4 schedule-serialisability examples."]],
+  Networks:[["OSI and TCP/IP layers","Draw both layer stacks from memory and map protocols to layers."],["Subnetting and IP addressing","Solve 10 subnetting problems with CIDR notation."],["Routing and TCP","Trace distance-vector routing on one example; explain TCP handshake and congestion control."]],
+  AI_Basics:[["Search algorithms","Run BFS, DFS and A* by hand on one graph."],["Machine-learning basics","Explain overfitting, then train one classifier in Python."],["Logic and knowledge representation","Convert 5 sentences to propositional/first-order logic."]]
+};
+const hard = {};   // subject -> Set of topic indices the student marks as hard
+const RESOURCES = {
+  Maths:"Revise linear algebra and probability; solve 10 practice problems per topic before attempting past papers.",
+  Programming:"Do 3 graded coding problems every other day, starting from easy and moving to medium.",
+  DBMS:"Practise SQL joins, normalisation and transaction questions; write queries on a sample database.",
+  Networks:"Draw the OSI/TCP-IP layers from memory, then work through subnetting and routing exercises.",
+  AI_Basics:"Revisit search algorithms and basic ML concepts; implement one algorithm from scratch in Python."
+};
+
+/* ---------- model ---------- */
+function predict(s){
+  let z = MODEL.intercept; const contrib = {};
+  MODEL.features.forEach((f,i)=>{ const c = MODEL.coef[i]*((s[f]-MODEL.mean[i])/MODEL.scale[i]); contrib[f]=c; z+=c; });
+  const p = 1/(1+Math.exp(-z));
+  return {p, level: p<MODEL.t_low?"Low":p<MODEL.t_high?"Medium":"High", contrib};
+}
+function quizAvg(s){ return SUBJECTS.reduce((a,k)=>a+Number(s[k]),0)/SUBJECTS.length; }
+function weakSubjects(s){ return SUBJECTS.map(k=>[k,Number(s[k])]).filter(x=>x[1]<55).sort((a,b)=>a[1]-b[1]); }
+
+/* ---------- recommendations ---------- */
+function recommend(s, r){
+  const out = []; const ws = weakSubjects(s);
+  const wsum = ws.reduce((a,[k,v])=>a+(55-v),0), budget = Math.max(2, Math.min(s.study_hours_week, 12));
+  ws.slice(0,3).forEach(([k,v],i)=>{
+    const sel = [...(hard[k]||[])].sort(), rest = TOPICS[k].map((_,j)=>j).filter(j=>!sel.includes(j));
+    const order = sel.concat(rest).slice(0,3).map(j=>`<i>${TOPICS[k][j][0]}</i>: ${TOPICS[k][j][1]}`).join(" ");
+    const hrs = Math.max(1, Math.round(budget*(55-v)/wsum*2)/2);
+    out.push({pri:i===0&&v<45?1:2, text:`<b>${SUBJ_LABEL[k]}</b> (${v.toFixed(0)}%), about ${hrs} h this week. ${sel.length?"Start with the topics you marked as hard. ":""}${order}`});});
+  if(s.attendance_pct<75) out.push({pri:1,text:`<b>Attendance is ${s.attendance_pct}%.</b> Aim to attend every class this week; missing lectures is one of the strongest signals in your score.`});
+  if(s.missed_deadlines>=3) out.push({pri:1,text:`<b>${s.missed_deadlines} missed deadlines.</b> Put every due date in a calendar and finish submissions a day early.`});
+  if(s.assignment_trend<-0.5) out.push({pri:2,text:`<b>Assignment marks are falling.</b> Ask the faculty for feedback on your last two submissions and redo the questions you lost marks on.`});
+  if(s.coding_hours_week<3) out.push({pri:2,text:`<b>Coding practice is ${s.coding_hours_week} h/week.</b> Raise it to at least 4 h in short daily sessions.`});
+  if(s.study_hours_week<7) out.push({pri:2,text:`<b>Self-study is ${s.study_hours_week} h/week.</b> Block two fixed 90-minute study slots on your timetable.`});
+  if(r.level==="Low" && !out.length) out.push({pri:3,text:"You are on track. Keep your routine and attempt one harder problem set per subject to stay ahead."});
+  if(r.level==="Low" && out.length) out.push({pri:3,text:"Overall you are on track; the items above are small adjustments to stay ahead."});
+  return out.sort((a,b)=>a.pri-b.pri);
+}
+function topFactors(s, r){
+  const arr = MODEL.features.map(f=>({f, c:r.contrib[f]}));
+  const raising = arr.filter(x=>x.c>0.05).sort((a,b)=>b.c-a.c).slice(0,3);
+  const helping = arr.filter(x=>x.c<-0.05).sort((a,b)=>a.c-b.c).slice(0,2);
+  return {raising, helping};
+}
+function actionFor(f){
+  return {attendance_pct:"Meet the student and agree an attendance plan; check for health or transport issues.",
+    quiz_avg:"Offer a short remedial session on the weakest subject and a practice quiz.",
+    assignment_avg:"Review the last assignments with the student and give targeted feedback.",
+    assignment_trend:"Arrange a mentoring check-in; marks are declining.",
+    coding_hours_week:"Assign a graded coding practice set and pair with a peer mentor.",
+    study_hours_week:"Share a weekly study timetable template and check progress in two weeks.",
+    missed_deadlines:"Discuss time management; set interim deadlines for the next assignment."}[f];
+}
+
+/* ---------- gauge ---------- */
+function drawGauge(p){
+  const cx=150, cy=150, R=115;
+  const arc=(a0,a1,col)=>{const pt=a=>[cx+R*Math.cos(Math.PI*(1-a)),cy-R*Math.sin(Math.PI*(1-a))];
+    const [x0,y0]=pt(a0),[x1,y1]=pt(a1);return `<path d="M${x0} ${y0} A${R} ${R} 0 0 1 ${x1} ${y1}" stroke="${col}" stroke-width="20" fill="none"/>`;};
+  const ang = Math.PI*(1-p), nx=cx+(R-6)*Math.cos(ang), ny=cy-(R-6)*Math.sin(ang);
+  document.getElementById("gauge").innerHTML =
+    arc(0,MODEL.t_low,"var(--ok)")+arc(MODEL.t_low,MODEL.t_high,"#e8a317")+arc(MODEL.t_high,1,"var(--bad)")+
+    `<line x1="${cx}" y1="${cy}" x2="${nx}" y2="${ny}" stroke="var(--ink)" stroke-width="4" stroke-linecap="round" style="transition:all .45s ease"/>
+     <circle cx="${cx}" cy="${cy}" r="9" fill="var(--ink)"/>
+     <text x="30" y="170" font-size="11" fill="var(--muted)">Low</text><text x="248" y="170" font-size="11" fill="var(--muted)">High</text>`;
+}
+
+/* ---------- student view ---------- */
+const state = {};
+function buildInputs(){
+  const sbox = document.getElementById("subjectInputs"), fbox = document.getElementById("featureInputs");
+  SUBJECTS.forEach(k=> sbox.insertAdjacentHTML("beforeend", rowHTML(k,SUBJ_LABEL[k]+" quiz average",0,100,1,"%")));
+  Object.entries(INPUTS).forEach(([k,c])=> fbox.insertAdjacentHTML("beforeend", rowHTML(k,c.l,c.min,c.max,c.step,c.u)));
+  document.querySelectorAll(".row input").forEach(el=>el.addEventListener("input",()=>{state[el.id]=Number(el.value);render();}));
+}
+function rowHTML(id,l,min,max,step,u){return `<div class="row"><label for="${id}">${l}</label><output id="o_${id}" data-u="${u}"></output><input type="range" id="${id}" min="${min}" max="${max}" step="${step}"></div>`;}
+function setState(o){ Object.assign(state,o); Object.entries(o).forEach(([k,v])=>{const el=document.getElementById(k); if(el) el.value=v;}); render(); }
+function render(){
+  document.querySelectorAll(".row output").forEach(o=>{const id=o.id.slice(2); o.textContent=state[id]+o.dataset.u;});
+  const s = {...state, quiz_avg:quizAvg(state)}; const r = predict(s);
+  drawGauge(r.p);
+  document.getElementById("pct").textContent = Math.round(r.p*100)+"%";
+  const lv = document.getElementById("level"); lv.textContent = r.level+" risk"; lv.className = "chip "+r.level;
+  const ws = weakSubjects(s);
+  document.getElementById("weakList").innerHTML = ws.length ? ws.map(([k,v])=>`<span>${SUBJ_LABEL[k]} ${v.toFixed(0)}%</span>`).join("") : '<span style="background:var(--okbg);color:var(--ok)">None below 55%</span>';
+  document.getElementById("topics").innerHTML = ws.length ? '<h3>Which topics feel hardest?</h3>'+ws.slice(0,3).map(([k])=>`<div style="margin-bottom:4px"><span class="note" style="margin:0">${SUBJ_LABEL[k]}</span><div>${TOPICS[k].map((tp,j)=>`<button class="tchip" data-k="${k}" data-j="${j}" aria-pressed="${!!(hard[k]&&hard[k].has(j))}">${tp[0]}</button>`).join("")}</div></div>`).join("") : "";
+  const {raising,helping} = topFactors(s,r);
+  const fHTML = (x,col)=>{const w=Math.min(100,Math.abs(x.c)*35); const safe=MODEL.feature_means_safe[x.f];
+    return `<div class="factor"><div>${NAME[x.f]}<small>You: ${(+s[x.f]).toFixed(x.f==="assignment_trend"?1:0)}${UNIT[x.f]} &middot; typical safe student: ${safe}${UNIT[x.f]}</small></div><div class="bar"><i style="left:0;width:${w}%;background:${col}"></i></div></div>`;};
+  document.getElementById("factors").innerHTML =
+    (raising.length?`<div class="note" style="margin:0 0 4px">Raising your risk</div>`+raising.map(x=>fHTML(x,"var(--bad)")).join(""):"")+
+    (helping.length?`<div class="note" style="margin:10px 0 4px">Keeping your risk down</div>`+helping.map(x=>fHTML(x,"var(--ok)")).join(""):"");
+  document.getElementById("plan").innerHTML = recommend(s,r).map(x=>`<li><span class="tag p${x.pri}">${["","Do first","Next","Maintain"][x.pri]}</span>${x.text}</li>`).join("");
+}
+
+/* ---------- faculty view ---------- */
+let cohort = [], sortKey="p", sortDir=-1, selected=null;
+function prep(row, i){
+  const s = {...row}; MODEL.features.forEach(f=>s[f]=Number(s[f]));
+  const hasSub = SUBJECTS.some(k=>s["quiz_"+k]!==undefined && s["quiz_"+k]!=="");
+  const sub = {}; SUBJECTS.forEach(k=>sub[k]=Number(s["quiz_"+k]));
+  if(hasSub) s.quiz_avg = SUBJECTS.reduce((a,k)=>a+sub[k],0)/SUBJECTS.length;
+  const r = predict(s);
+  const w = hasSub ? Object.entries(sub).sort((a,b)=>a[1]-b[1])[0] : null;
+  return {id: row.id || "S-"+String(i+1).padStart(3,"0"), s, sub, hasSub, ...r, weak: w?SUBJ_LABEL[w[0]]+" ("+w[1].toFixed(0)+"%)":"n/a"};
+}
+function loadCohort(rows){ cohort = rows.map(prep); selected=null; renderCohort(); }
+function renderCohort(){
+  const f = document.getElementById("filter").value;
+  const count = l=>cohort.filter(c=>c.level===l).length;
+  document.getElementById("stats").innerHTML =
+    `<div class="stat"><b>${cohort.length}</b><span>Students</span></div>
+     <div class="stat"><b style="color:var(--bad)">${count("High")}</b><span>High risk</span></div>
+     <div class="stat"><b style="color:var(--mid)">${count("Medium")}</b><span>Medium risk</span></div>
+     <div class="stat"><b style="color:var(--ok)">${count("Low")}</b><span>Low risk</span></div>`;
+  const rows = cohort.filter(c=>f==="all"||c.level===f).sort((a,b)=>{const x=sortKey in a?a[sortKey]:a.s[sortKey], y=sortKey in b?b[sortKey]:b.s[sortKey];return (x>y?1:x<y?-1:0)*sortDir;});
+  document.querySelector("#cohort tbody").innerHTML = rows.map(c=>
+    `<tr data-id="${c.id}" aria-selected="${selected===c.id}"><td>${c.id}</td><td>${Math.round(c.p*100)}%</td><td><span class="chip ${c.level}">${c.level}</span></td><td>${c.weak}</td><td>${c.s.attendance_pct.toFixed(0)}%</td><td>${c.s.quiz_avg.toFixed(0)}%</td></tr>`).join("") || '<tr><td colspan="6">No students match this filter.</td></tr>';
+}
+function showDetail(id){
+  selected=id; const c = cohort.find(x=>x.id===id); renderCohort();
+  const {raising} = topFactors(c.s,c);
+  const lead = raising[0];
+  document.getElementById("detail").innerHTML =
+    `<h2>${c.id} <span class="chip ${c.level}">${c.level} risk &middot; ${Math.round(c.p*100)}%</span></h2>
+     <h3>Main reasons</h3>${raising.length?raising.map(x=>`<div class="factor"><div>${NAME[x.f]}<small>${(+c.s[x.f]).toFixed(x.f==="assignment_trend"?1:0)}${UNIT[x.f]} vs safe average ${MODEL.feature_means_safe[x.f]}${UNIT[x.f]}</small></div><div class="bar"><i style="left:0;width:${Math.min(100,x.c*35)}%;background:var(--bad)"></i></div></div>`).join(""):"<p class='note'>No factor is raising this student's risk.</p>"}
+     <h3>Suggested intervention</h3><p style="margin:0">${lead?actionFor(lead.f):"No intervention needed. Continue routine monitoring."}</p>
+     ${c.hasSub?`<h3>Weak subjects</h3><div class="weak">${(()=>{const w=SUBJECTS.filter(k=>c.sub[k]<55);return w.length?w.map(k=>`<span>${SUBJ_LABEL[k]} ${c.sub[k].toFixed(0)}%</span>`).join(""):"<span style='background:var(--okbg);color:var(--ok)'>None below 55%</span>"})()}</div>`:""}`;
+}
+function parseCSV(t){
+  const lines = t.trim().split(/\r?\n/); const h = lines[0].split(",").map(x=>x.trim());
+  const missing = MODEL.features.filter(f=>f!=="quiz_avg" && !h.includes(f));
+  if(!h.includes("quiz_avg") && !SUBJECTS.every(k=>h.includes("quiz_"+k))) missing.push("quiz_avg");
+  if(missing.length) throw new Error("Missing columns: "+missing.join(", "));
+  return lines.slice(1).filter(Boolean).map(l=>{const v=l.split(","); const o={}; h.forEach((k,i)=>o[k]=v[i]?.trim()); return o;});
+}
+
+/* ---------- wiring ---------- */
+function showTab(name){
+  ["student","faculty"].forEach(n=>{document.getElementById("view-"+n).classList.toggle("hidden",n!==name);
+    document.getElementById("tab-"+n).setAttribute("aria-selected",n===name);});
+}
+document.getElementById("tab-student").onclick=()=>showTab("student");
+document.getElementById("tab-faculty").onclick=()=>showTab("faculty");
+document.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>setState(PRESETS[b.dataset.preset]));
+document.getElementById("topics").addEventListener("click",e=>{const b=e.target.closest(".tchip"); if(!b) return; const k=b.dataset.k, j=+b.dataset.j; hard[k]=hard[k]||new Set(); hard[k].has(j)?hard[k].delete(j):hard[k].add(j); render();});
+document.getElementById("filter").onchange=renderCohort;
+document.querySelector("#cohort tbody").addEventListener("click",e=>{const tr=e.target.closest("tr[data-id]"); if(tr) showDetail(tr.dataset.id);});
+document.querySelectorAll("#cohort th").forEach(th=>th.onclick=()=>{const k=th.dataset.k; sortDir = sortKey===k?-sortDir:-1; sortKey=k; renderCohort();});
+document.getElementById("resetCohort").onclick=()=>loadCohort(SAMPLE);
+document.getElementById("csv").onchange=e=>{const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader(); rd.onload=()=>{try{loadCohort(parseCSV(rd.result));}catch(err){alert(err.message);}}; rd.readAsText(f);};
+/* ---------- optional backend (accounts + history); hidden when no server is present ---------- */
+async function api(path, method="GET", body){
+  const r = await fetch(path,{method,headers:{"Content-Type":"application/json"},credentials:"same-origin",body:body?JSON.stringify(body):undefined});
+  if(!(r.headers.get("content-type")||"").includes("json")) throw new Error("no-api");
+  return {ok:r.ok, data:await r.json()};
+}
+const $ = id=>document.getElementById(id);
+function msg(t){ $("authMsg").textContent=t||""; }
+function setMe(u){
+  $("authBox").classList.toggle("hidden",!!u); $("savedBox").classList.toggle("hidden",!u); $("dbCohort").classList.toggle("hidden",!(u&&u.role==="faculty"));
+  if(u){ $("whoami").textContent=u.username+" ("+u.role+")"; $("btnSave").classList.toggle("hidden",u.role!=="student"); if(u.role==="student") loadHistory(); else {$("trend").innerHTML="";$("historyList").innerHTML="";} }
+}
+async function loadHistory(){
+  const {data}=await api("api/history"); const h=data.history||[];
+  $("historyList").innerHTML=h.slice().reverse().slice(0,6).map(x=>`<li>${x.created.slice(0,16).replace("T"," ")}: ${Math.round(x.risk*100)}% <span class="chip ${x.level}">${x.level}</span></li>`).join("")||"<li>No snapshots yet. Save one to start your trend.</li>";
+  const W=300,H=90,n=h.length; if(!n){$("trend").innerHTML="";return;}
+  const pts=h.map((x,i)=>[n===1?W/2:10+i*(W-20)/(n-1), H-10-x.risk*(H-20)]);
+  $("trend").innerHTML=`<line x1="10" x2="${W-10}" y1="${H-10}" y2="${H-10}" stroke="var(--line)"/><polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="${pts.map(p=>p.join(",")).join(" ")}"/>`+pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="var(--accent)"/>`).join("")+`<text x="10" y="10" font-size="9" fill="var(--muted)">Risk over time (higher is worse)</text>`;
+}
+async function auth(kind){
+  try{ const body={username:$("uName").value.trim(),password:$("uPass").value}; if(kind==="register"){body.role=$("uRole").value;body.faculty_code=$("uCode").value;}
+    const r=await api("api/"+kind,"POST",body); if(!r.ok){msg(r.data.error||"Something went wrong.");return;} msg(""); setMe(r.data.user); $("uPass").value="";
+  }catch(e){ msg("Server not reachable."); }
+}
+$("btnLogin").onclick=()=>auth("login"); $("btnRegister").onclick=()=>auth("register");
+$("uRole").onchange=()=>$("uCode").classList.toggle("hidden",$("uRole").value!=="faculty");
+$("btnLogout").onclick=async()=>{await api("api/logout","POST"); setMe(null);};
+$("btnSave").onclick=async()=>{const r=await api("api/snapshots","POST",state); msg(r.ok?"Snapshot saved.":(r.data.error||"Could not save.")); if(r.ok) loadHistory();};
+$("dbCohort").onclick=async()=>{const r=await api("api/cohort"); if(r.ok&&r.data.students.length){loadCohort(r.data.students);} else msg("No student snapshots saved yet.");};
+(async()=>{ try{ const r=await api("api/me"); $("account").classList.remove("hidden"); setMe(r.data.user);}catch(e){} })();
+
+buildInputs(); setState(PRESETS.avg); loadCohort(SAMPLE);
+</script>
+</body>
+</html>

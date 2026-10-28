@@ -1,0 +1,4 @@
+Model,Best_params,CV_AUC,ROC_AUC,PR_AUC,Precision,Recall,F1
+Logistic Regression,{'C': 0.1},0.974,0.972,0.927,0.723,0.944,0.819
+Random Forest,"{'max_depth': None, 'min_samples_leaf': 1, 'n_estimators': 200}",0.974,0.968,0.906,0.775,0.764,0.769
+Gradient Boosting,"{'learning_rate': 0.1, 'max_depth': 2, 'n_estimators': 100}",0.974,0.973,0.927,0.806,0.806,0.806
